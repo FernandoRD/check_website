@@ -15,7 +15,7 @@ from marionette_driver import marionette
 os.environ['http_proxy'] = ''
 os.environ['https_proxy'] = ''
 
-my_parser = argparse.ArgumentParser(description='Check Website.')
+my_parser = argparse.ArgumentParser(description='Check Website.', epilog='Created by Fernando Durso, GitHub: FernandoRD')
 my_parser.add_argument('-u','--url', action='store', type=str, required=True, help='Link/url')
 my_parser.add_argument('-p','--port', action='store', type=str, required=True, help='Firefox port to connect to')
 my_parser.add_argument('-s','--screenshot', action='store_true', help='PNG Screenshot.')
