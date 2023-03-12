@@ -10,6 +10,8 @@
  
 2 - Geckodriver compatible with installed firefox "https://github.com/mozilla/geckodriver"
 
+3 - Compatibility table "https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html"
+
  ### Python:
 
 A venv with selenium webdriver_manager marionette-driver marionette modules installed.
