@@ -1,4 +1,4 @@
-#!/usr/local/nagios/libexec/python_web_checks/venv/bin/python3.8
+#!/usr/bin/python3
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
@@ -19,6 +19,8 @@ args = my_parser.parse_args()
 options = FirefoxOptions()
 options.add_argument("--headless")
 options.add_argument("--no-sandbox")
+options.add_argument("--marionette-host")
+options.set_preference("FirefoxProfile.PORT_PREFERENCE", args.port)
 options.set_preference("browser.cache.disk.enable", False)
 options.set_preference("browser.cache.memory.enable", False)
 options.set_preference("browser.cache.offline.enable", False)
@@ -52,7 +54,7 @@ output = str(p4.communicate()[0]).split(" ")[0].split("'")[1]
 if output != browser_port:
     print('Starting browser...')
     try:
-        browser = webdriver.Firefox(firefox_profile=profile, options=options,executable_path='/usr/local/nagios/libexec/python_web_checks/geckodriver',service_log_path='/dev/null',service_args=['--marionette-port',browser_port])
+        browser = webdriver.Firefox(firefox_profile=profile, options=options,executable_path='/home/fernando/check_website/geckodriver',service_log_path='/dev/null',service_args=['--marionette-port',browser_port])
         #browser = webdriver.Firefox(options=options,executable_path='/usr/local/nagios/libexec/python_web_checks/geckodriver',service_log_path='/dev/null',service_args=['--marionette-port',browser_port])
     except Exception as e:
         print(f'Failed to open browser:\n{e}')
