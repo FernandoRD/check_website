@@ -46,6 +46,8 @@ def navigate(browser, SITE, PRINTP, delay, script_path):
 
     try:
         WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).send_keys("emagrecimento")
+        escrito = WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).read
+        print(escrito)
 
     except Exception as e:
         print("CRITICAL: URL Access Error! - {}".format(e))

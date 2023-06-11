@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # Set environment variables
     os.environ['http_proxy'] = ''
     os.environ['https_proxy'] = ''
-    script_path='/home/fernando/check_website'
+    script_path='/some/path/check_website'
 
     my_parser = argparse.ArgumentParser(description='Check Website.', epilog='Created by Fernando Durso, GitHub: FernandoRD')
     my_parser.add_argument('-u','--url', action='store', type=str, required=True, help='Link/url')
