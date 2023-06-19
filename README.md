@@ -1,6 +1,6 @@
 # check_website
 
-Nagios script that interact to a website to check if it´s OK
+Zabbix script that interact to a website to check if it´s OK
 
 ## Pre requisites
 
@@ -14,7 +14,7 @@ Nagios script that interact to a website to check if it´s OK
 
 ### Python
 
-A venv with selenium webdriver_manager marionette-driver marionette modules installed.
+A venv with selenium webdriver_manager marionette-driver marionette and py-zabbix modules installed.
 
 ## Running the script
 
@@ -31,7 +31,7 @@ Then you may put it to run in crontab or even create a service in Nagios to chec
 Then run the check:
 
 ```shell
- ./check_website.py -u http://www.foobar.com -w 5 -c 10 -e module_to_execute -p profile
+ ./check_website.py -u http://www.foobar.com -e module_to_execute -p profile -H host
 ```
 
 It will use the firefox running at the given port to make the check and then returns the time spent in case of success.

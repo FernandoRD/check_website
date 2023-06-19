@@ -14,12 +14,12 @@ import os, time
 os.environ['http_proxy'] = ''
 os.environ['https_proxy'] = ''
 
-def navigate(browser, SITE, PRINTP, delay, script_path):
+def navigate(browser, site, printp, delay, script_path):
     # Advanced buttom - //*[@id="advancedButton"]
     # Accept Risk and continue buttom - //*[@id="exceptionDialogButton"]
 
     try:
-        browser.navigate(SITE)
+        browser.navigate(site)
     except Exception as e:
         # Handle firefox SSL Error
         if browser.find_element(By.XPATH, '//*[@id="advancedButton"]'):
@@ -30,13 +30,13 @@ def navigate(browser, SITE, PRINTP, delay, script_path):
             time.sleep(1)
             browser.find_element(By.XPATH, '//*[@id="exceptionDialogButton"]').click()
         else:
-            print("CRITICAL: Load page failed!\n{}".format(e))
+            print(f'Load page failed!\n{e}')
             with open(f'{script_path}/screenshot_firefox_SSL_FAILURE.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)
         try:
-            browser.navigate(SITE)
+            browser.navigate(site)
         except Exception as e:
-            print("CRITICAL: Load page failed! (2)\n{}".format(e))
+            print(f'Load page failed! (2)\n{e}')
             with open(f'{script_path}/screenshot_load_page_google_ERROR.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)
             exit(2)
@@ -45,18 +45,16 @@ def navigate(browser, SITE, PRINTP, delay, script_path):
                 browser.save_screenshot(fh=screenshot)
 
     try:
-        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).send_keys("emagrecimento")
-        escrito = WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).read
-        print(escrito)
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).send_keys("unirede")
 
     except Exception as e:
-        print("CRITICAL: URL Access Error! - {}".format(e))
-        if PRINTP == True:
+        print(f'URL Access Error! - {e}')
+        if printp == True:
             with open(f'{script_path}/screenshot_google_type_ERROR.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)
         exit(2)
     else:
-        if PRINTP == True:
+        if printp == True:
             with open(f'{script_path}/screenshot_google_type_OK.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)
 
@@ -64,12 +62,12 @@ def navigate(browser, SITE, PRINTP, delay, script_path):
         browser.find_element(By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea').send_keys(Keys.ENTER)
         time.sleep(2)
     except Exception as e:
-        print("CRITICAL: URL Access Error! - {}".format(e))
-        if PRINTP == True:
+        print(f'URL Access Error! - {e}')
+        if printp == True:
             with open(f'{script_path}/screenshot_google_hit_ENTER_ERROR.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)
         exit(2)
     else:
-        if PRINTP == True:
+        if printp == True:
             with open(f'{script_path}/screenshot_google_hit_ENTER_OK.png', 'bw') as screenshot:
                 browser.save_screenshot(fh=screenshot)

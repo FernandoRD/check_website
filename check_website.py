@@ -2,18 +2,19 @@
 
 # Debian:
 # python3 -m pip install --upgrade pip
-# pip3 install selenium webdriver_manager marionette-driver marionette
+# pip install selenium webdriver_manager marionette-driver marionette
 # apt install libgtk-3-0 libdbus-glib-1-dev libx11-xcb1
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from marionette_driver import marionette
+from pyzabbix import ZabbixMetric, ZabbixSender
 import re
-
 import time
 import os
 import argparse
-from marionette_driver import marionette
+
 
 class PatternNotFoundException(Exception):
     pass
@@ -43,28 +44,29 @@ def search_pattern_in_file(file_path, pattern, profile):
     except FileNotFoundError:
         return f"File '{file_path}' not found."
 
+client_cfg = '/etc/zabbix/zabbix_agent2.conf'
+
 if __name__ == "__main__":
 
     # Set environment variables
     os.environ['http_proxy'] = ''
     os.environ['https_proxy'] = ''
-    script_path='/some/path/check_website'
+    script_path='/home/fernando/check_website'
 
     my_parser = argparse.ArgumentParser(description='Check Website.', epilog='Created by Fernando Durso, GitHub: FernandoRD')
     my_parser.add_argument('-u','--url', action='store', type=str, required=True, help='Link/url')
     my_parser.add_argument('-s','--screenshot', action='store_true', help='PNG Screenshot.')
-    my_parser.add_argument('-w','--warning', action='store', type=int, required=True, help='WARNING Threshold')
-    my_parser.add_argument('-c','--critical', action='store', type=int, required=True, help='CRITICAL Threshold')
+    my_parser.add_argument('-H','--host', action='store', type=str, required=True, help='Host name')
     my_parser.add_argument('-e','--exec', action='store', type=str, required=True, help='Python script to import & execute')
     my_parser.add_argument('-p','--profile', action='store', type=str, required=True, help='Firefox profile of desired instance to use')
 
     args = my_parser.parse_args()
 
-    SITE=args.url
+    site=args.url
     profile=args.profile
-    PRINTP=args.screenshot
-    WARNING=args.warning
-    CRITICAL=args.critical
+    printp=args.screenshot
+    host=args.host
+    #CRITICAL=args.critical
     exec_script = args.exec
 
     try:
@@ -96,16 +98,13 @@ if __name__ == "__main__":
     # In this way, just need a .py for each site e pass it as parameter (without the .py extension)
     exec_module = __import__(exec_script)
 
-    exec_module.navigate(browser, SITE, PRINTP, delay, script_path)
+    exec_module.navigate(browser, site, printp, delay, script_path)
 
     total_time=time.time() - start_time
 
-    if total_time < WARNING:
-        print("OK: {} - Execution time: {:.2f} s | exec_time={:.2f}s;{};{};0;{}".format(exec_script, total_time, total_time, WARNING, CRITICAL,CRITICAL*2))
-        exit(0)
-    elif total_time > WARNING and total_time < CRITICAL:
-        print("WARNING: {} - Execution time: {:.2f} s | exec_time={:.2f}s;{};{};0;{}".format(exec_script, total_time, total_time, WARNING, CRITICAL,CRITICAL*2))
-        exit(1)
-    elif total_time > CRITICAL:
-        print("CRITICAL: {} - Execution time: {:.2f} s | exec_time={:.2f}s;{};{};0;{}".format(exec_script, total_time, total_time, WARNING, CRITICAL,CRITICAL*2))
-        exit(2)
+    print(f"{total_time:.2f}")
+    
+    packet = [ZabbixMetric(f'{host}', 'website[total_time]', f'{total_time:.2f}')]
+
+    result = ZabbixSender(use_config=client_cfg).send(packet)
+    #print(result)

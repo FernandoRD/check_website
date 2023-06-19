@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Set environment variables
     os.environ['http_proxy'] = ''
     os.environ['https_proxy'] = ''
-    script_path='/home/fernando/Documentos/Projetos/check_website'
+    script_path='/home/fernando/check_website'
 
     sys_path = os.environ['PATH']
     os.environ['PATH'] = f"{sys_path}:{script_path}:{script_path}/firefox"
