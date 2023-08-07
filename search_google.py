@@ -45,7 +45,7 @@ def navigate(browser, site, printp, delay, script_path):
                 browser.save_screenshot(fh=screenshot)
 
     try:
-        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).send_keys("unirede")
+        WebDriverWait(browser, delay).until(EC.presence_of_element_located((By.XPATH,'/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/textarea'))).send_keys(f'Mauricio Martinez')
 
     except Exception as e:
         print(f'URL Access Error! - {e}')

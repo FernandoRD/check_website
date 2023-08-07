@@ -1,8 +1,7 @@
-#!/usr/bin/python3
-
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+#from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 import subprocess
 import os
 import argparse
@@ -17,11 +16,6 @@ def search_pattern_in_file(file_path, pattern):
             for line in file:
                 matches = re.findall(pattern, line)
                 if matches:
-                    #print(f"Pattern '{pattern}' found in the line:")
-                    #print(line)
-                    #print("Matches:")
-                    #for match in matches:
-                    #    print(match)
                     regex_pattern = r'user_pref\("marionette\.port", (\d+)\);'
                     matches = re.findall(regex_pattern, line)
                     if matches:
@@ -35,14 +29,16 @@ def search_pattern_in_file(file_path, pattern):
         return f"File '{file_path}' not found."
 
 if __name__ == "__main__":
-        
+    
+    script_path = os.path.dirname(os.path.abspath(__file__))
     # Set environment variables
     os.environ['http_proxy'] = ''
     os.environ['https_proxy'] = ''
-    script_path='/home/fernando/check_website'
+    # Removendo paths desnecessários no PATH do script ex: snap!
+    os.environ['PATH'] = f'/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
     sys_path = os.environ['PATH']
-    os.environ['PATH'] = f"{sys_path}:{script_path}:{script_path}/firefox"
+    os.environ['PATH'] = f"{sys_path}:{script_path}:{script_path}/firefox:{script_path}/venv/bin"
 
     my_parser = argparse.ArgumentParser(description='Firefox marionette.')
     my_parser.add_argument('-p','--profile', action='store', type=str, required=False, help='Firefox profile name.')
@@ -57,6 +53,7 @@ if __name__ == "__main__":
         new_dir_path = f'{script_path}/profile_default'
         if not os.path.exists(new_dir_path):
             os.makedirs(new_dir_path)
+            
         profile = 'profile_default'
 
     options = FirefoxOptions()
@@ -75,13 +72,12 @@ if __name__ == "__main__":
     options.set_preference("security.certerrors.permanentOverride", True)
     options.set_preference("network.stricttransportsecurity.preloadlist", False)
     options.set_preference("security.enterprise_roots.enabled", False)
-
+    options.binary_location = r'./firefox/firefox'
+    
     try:
         browser_port = search_pattern_in_file(f"{script_path}/{profile}/prefs.js", 'marionette.port')
     except PatternNotFoundException as e:
-        print(e)
-
-    #print(browser_port)
+        print('AQUI'+str(e))
 
     p1 = subprocess.Popen(['netstat', '-ltpn'],stdout=subprocess.PIPE)
     p2 = subprocess.Popen(['grep', 'firefox'], stdin=p1.stdout, stdout=subprocess.PIPE)
@@ -91,7 +87,6 @@ if __name__ == "__main__":
     p1.stdout.close()
 
     output = str(p4.communicate()[0]).split(" ")[0].split("'")[1]
-
 
     if output != browser_port:
         print('Starting browser...')
@@ -105,4 +100,5 @@ if __name__ == "__main__":
             print('Browser opened')
     else:
         print(f'Firefox at port {browser_port} found...')
+        
 

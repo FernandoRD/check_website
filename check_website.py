@@ -1,15 +1,12 @@
-#!/usr/bin/python3
-
 # Debian:
 # python3 -m pip install --upgrade pip
-# pip install selenium webdriver_manager marionette-driver marionette
-# apt install libgtk-3-0 libdbus-glib-1-dev libx11-xcb1
+# pip install selenium webdriver_manager marionette-driver marionette py-zabbix
+# apt install libgtk-3-0 libdbus-glib-1-dev libx11-xcb1 net-tools
 
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from marionette_driver import marionette
-from pyzabbix import ZabbixMetric, ZabbixSender
+from pyzabbix import ZabbixMetric
+from pyzabbix import ZabbixSender
+
 import re
 import time
 import os
@@ -51,7 +48,7 @@ if __name__ == "__main__":
     # Set environment variables
     os.environ['http_proxy'] = ''
     os.environ['https_proxy'] = ''
-    script_path='/home/fernando/check_website'
+    script_path = os.path.dirname(os.path.abspath(__file__))
 
     my_parser = argparse.ArgumentParser(description='Check Website.', epilog='Created by Fernando Durso, GitHub: FernandoRD')
     my_parser.add_argument('-u','--url', action='store', type=str, required=True, help='Link/url')
@@ -66,7 +63,6 @@ if __name__ == "__main__":
     profile=args.profile
     printp=args.screenshot
     host=args.host
-    #CRITICAL=args.critical
     exec_script = args.exec
 
     try:
@@ -98,13 +94,14 @@ if __name__ == "__main__":
     # In this way, just need a .py for each site e pass it as parameter (without the .py extension)
     exec_module = __import__(exec_script)
 
-    exec_module.navigate(browser, site, printp, delay, script_path)
+    exec_module.navigate(browser, site, printp, delay, script_path, host, client_cfg)
 
     total_time=time.time() - start_time
-
-    print(f"{total_time:.2f}")
     
     packet = [ZabbixMetric(f'{host}', 'website[total_time]', f'{total_time:.2f}')]
+    try:
+        result = ZabbixSender(use_config=client_cfg).send(packet)
+    except Exception as e:
+        print(e)
 
-    result = ZabbixSender(use_config=client_cfg).send(packet)
-    #print(result)
+

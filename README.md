@@ -1,29 +1,29 @@
 # check_website
 
-Zabbix script that interact to a website to check if it´s OK
+ Nagios script that interact to a website to check if it´s OK
 
-## Pre requisites
+## Pre requisites:
 
-### System
+### System:
 
-1 - Firefox browser "<https://www.mozilla.org/en-US/firefox/all/#product-desktop-release>"
+1 - Firefox browser "https://www.mozilla.org/en-US/firefox/all/#product-desktop-release"
+ 
+2 - Geckodriver compatible with installed firefox "https://github.com/mozilla/geckodriver"
 
-2 - Geckodriver compatible with installed firefox "<https://github.com/mozilla/geckodriver>"
+3 - Compatibility table "https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html"
 
-3 - Compatibility table "<https://firefox-source-docs.mozilla.org/testing/geckodriver/Support.html>"
+ ### Python:
 
-### Python
-
-A venv with selenium webdriver_manager marionette-driver marionette and py-zabbix modules installed.
+A venv with selenium webdriver_manager marionette-driver marionette modules installed.
 
 ## Running the script
 
 The script works in two parts.
-
+ 
 The run_firefox is responsable to keep a firefox instance open and running for use.
 
 ```shell
- ./run_firefox.py -p profile [Mandatory]
+ ./run_firefox -p port [Mandatory] -f profile [Optional]
 ```
 
 Then you may put it to run in crontab or even create a service in Nagios to check if any firefox instance is running at the given port.
@@ -31,7 +31,7 @@ Then you may put it to run in crontab or even create a service in Nagios to chec
 Then run the check:
 
 ```shell
- ./check_website.py -u http://www.foobar.com -e module_to_execute -p profile -H host
+ ./check_website.py -u http://www.foobar.com -w 5 -c 10 -e module_to_execute -p port
 ```
 
 It will use the firefox running at the given port to make the check and then returns the time spent in case of success.
